@@ -4,6 +4,21 @@ import numpy as np
 
 BASE = "../datasets/UCI HAR Dataset/"
 
+CHANNELS = {
+    "body_acc_x": 0,
+    "body_acc_y": 1,
+    "body_acc_z": 2,
+    "body_gyro_x": 3,
+    "body_gyro_y": 4,
+    "body_gyro_z": 5,
+    "total_acc_x": 6,
+    "total_acc_y": 7,
+    "total_acc_z": 8,
+}
+
+ACCL = [0, 1, 2]
+GYRO = [3, 4, 5]
+
 
 def load_raw(path):
     files = sorted(glob.glob(os.path.join(path, "*.txt")))
@@ -64,3 +79,7 @@ if __name__ == "__main__":
     print(f"y_train.shape {y_train.shape}")
     print(f"X_test.shape {X_test.shape}")
     print(f"y_test.shape {y_test.shape}")
+
+    files = sorted(glob.glob("../datasets/UCI HAR Dataset/train/Inertial Signals/*.txt"))
+    for i, f in enumerate(files):
+        print(i, os.path.basename(f))
