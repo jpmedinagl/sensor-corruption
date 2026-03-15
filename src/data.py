@@ -1,8 +1,7 @@
-import os
-import glob
+from pathlib import Path
 import numpy as np
 
-BASE = "../datasets/UCI HAR Dataset/"
+BASE = Path(__file__).resolve().parent.parent / "datasets" / "UCI HAR Dataset"
 
 CHANNELS = {
     "body_acc_x": 0,
@@ -21,7 +20,7 @@ GYRO = [3, 4, 5]
 
 
 def load_raw(path):
-    files = sorted(glob.glob(os.path.join(path, "*.txt")))
+    files = sorted(Path(path).glob("*.txt"))
 
     signals = []
     for f in files:
@@ -33,22 +32,22 @@ def load_raw(path):
 
 
 def load_labels():
-    y_train = np.loadtxt(os.path.join(BASE, "train/y_train.txt")).astype(int)
-    y_test = np.loadtxt(os.path.join(BASE, "test/y_test.txt")).astype(int)
+    y_train = np.loadtxt(BASE / "train" / "y_train.txt").astype(int)
+    y_test = np.loadtxt(BASE / "test" / "y_test.txt").astype(int)
     
     return y_train, y_test
 
 
 def load_subjects():
-    subject_train = np.loadtxt(os.path.join(BASE, "train/subject_train.txt")).astype(int)
-    subject_test = np.loadtxt(os.path.join(BASE, "test/subject_test.txt")).astype(int)
+    subject_train = np.loadtxt(BASE / "train" / "subject_train.txt").astype(int)
+    subject_test = np.loadtxt(BASE / "test" / "subject_test.txt").astype(int)
     
     return subject_train, subject_test
 
 
 def load_raw_data():
-    X_train = load_raw(os.path.join(BASE, "train/Inertial Signals"))
-    X_test = load_raw(os.path.join(BASE, "test/Inertial Signals"))
+    X_train = load_raw(BASE / "train" / "Inertial Signals")
+    X_test = load_raw(BASE / "test" / "Inertial Signals")
 
     y_train, y_test = load_labels()
     
@@ -56,8 +55,8 @@ def load_raw_data():
 
 
 def load_processed_data():
-    X_train = np.loadtxt(os.path.join(BASE, "train/X_train.txt"))
-    X_test = np.loadtxt(os.path.join(BASE, "test/X_test.txt"))
+    X_train = np.loadtxt(BASE / "train" / "X_train.txt")
+    X_test = np.loadtxt(BASE / "test" / "X_test.txt")
 
     y_train, y_test = load_labels()
 
@@ -80,6 +79,6 @@ if __name__ == "__main__":
     print(f"X_test.shape {X_test.shape}")
     print(f"y_test.shape {y_test.shape}")
 
-    files = sorted(glob.glob("../datasets/UCI HAR Dataset/train/Inertial Signals/*.txt"))
+    files = sorted((BASE / "train" / "Inertial Signals").glob("*.txt"))
     for i, f in enumerate(files):
-        print(i, os.path.basename(f))
+        print(i, f.name)
