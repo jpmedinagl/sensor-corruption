@@ -9,7 +9,7 @@ SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
 
-from data import load_raw_data, load_processed_data, GYRO
+from data import load_raw_data, load_processed_data, GYRO, ACCL
 from corruption import CorruptionFramework
 
 def flatten_timeseries(X: np.ndarray) -> np.ndarray:
@@ -93,12 +93,19 @@ def main():
         label="processed features"
     )
 
+    # CORRUPTION GYRO
     evaluate_knn_with_corruption(
         corruption_type="dropout",
         channels=GYRO,
         severities=[0.1, 0.3, 0.5]
     )
 
-
+    # Corruption ACCL
+    evaluate_knn_with_corruption(
+        corruption_type="dropout",
+        channels=ACCL,
+        severities=[0.1, 0.3, 0.5]
+    )
+    
 if __name__ == "__main__":
     main()
