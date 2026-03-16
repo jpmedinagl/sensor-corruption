@@ -9,7 +9,8 @@ SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
 
-from data import load_raw_data, load_processed_data
+from data import load_raw_data, load_processed_data, GYRO
+from corruption import CorruptionFramework
 
 def flatten_timeseries(X: np.ndarray) -> np.ndarray:
     '''The expected input is a two-dimensional matrix, 
@@ -37,6 +38,36 @@ def evaluate_knn(X_train, y_train, X_test, y_test, label: str, n_neighbors: int 
     print(cm)
     print()
 
+def evaluate_knn_with_corruption(corruption_type: str, channels, severities):
+    X_train, y_train, X_test, y_test = load_raw_data()
+
+    # flatten clean training data
+    X_train_flat = flatten_timeseries(X_train)
+
+    model = KNeighborsClassifier(n_neighbors=5)
+    model.fit(X_train_flat, y_train)
+
+    print(f"=== KNN Corruption Results: {corruption_type}, channels={channels} ===")
+
+    for severity in severities:
+        framework = CorruptionFramework(
+            corruption_type=corruption_type,
+            channels=channels,
+            severity=severity
+        )
+
+        X_test_corrupt = framework.corrupt(X_test)
+        X_test_corrupt_flat = flatten_timeseries(X_test_corrupt)
+
+        y_pred = model.predict(X_test_corrupt_flat)
+
+        acc = accuracy_score(y_test, y_pred)
+        macro_f1 = f1_score(y_test, y_pred, average="macro")
+
+        print(f"Severity={severity}: Accuracy={acc:.4f}, Macro-F1={macro_f1:.4f}")
+
+    print()
+
 def main():
     # Raw data baseline
     X_train_raw, y_train_raw, X_test_raw, y_test_raw = load_raw_data()
@@ -60,6 +91,12 @@ def main():
         X_test_proc,
         y_test_proc,
         label="processed features"
+    )
+
+    evaluate_knn_with_corruption(
+        corruption_type="dropout",
+        channels=GYRO,
+        severities=[0.1, 0.3, 0.5]
     )
 
 
