@@ -99,16 +99,30 @@ def main():
         label="processed features"
     )
 
-    # Corruption GYRO
+    # Gyroscope dropout
     evaluate_svm_with_corruption(
         corruption_type="dropout",
         channels=GYRO,
         severities=[0.1, 0.3, 0.5]
     )
 
-    # Corruption ACCL
+    # Accelerometer dropout
     evaluate_svm_with_corruption(
         corruption_type="dropout",
+        channels=ACCL,
+        severities=[0.1, 0.3, 0.5]
+    )
+
+    # Gyroscope drift
+    evaluate_svm_with_corruption(
+        corruption_type="drift",
+        channels=GYRO,
+        severities=[0.1, 0.3, 0.5]
+    )
+
+    # Accelerometer drift
+    evaluate_svm_with_corruption(
+        corruption_type="drift",
         channels=ACCL,
         severities=[0.1, 0.3, 0.5]
     )
