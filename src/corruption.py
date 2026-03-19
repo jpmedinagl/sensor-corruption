@@ -9,7 +9,12 @@ rng = np.random.default_rng(20)
 class CorruptionFramework:
     """
     corruption_type: str
-        'resolution_loss' - severity = bits retained (1, 2, 3, 4, 5, 6)
+        'stochastic'    - severity = fraction of std (0.25, 0.5, 1.0, 1.25)
+        'dropout'       - severity = fraction of timesteps (0.0, ..., 1.0)
+        'bias'          - severity = fraction of std (0.5, 1.0, 1.25, 2.0)
+        'gain'          - severity = multiplier (0.5, 0.75, 1.25, 2.0)
+        'drift'         - severity = multiplier of std (1, 2, 3, 4)
+        'resolution'    - severity = bits retained (1, 2, 3, 4, 5, 6)
     """
     
 
@@ -17,6 +22,7 @@ class CorruptionFramework:
         self.corruption_type = corruption_type
         self.channels = channels
         self.severity = severity
+
 
     def _check_corruption(self):
 
@@ -26,6 +32,12 @@ class CorruptionFramework:
         elif (self.corruption_type == "dropout"):
             if not 0 <= self.severity <= 1.0:
                 raise ValueError("Severity must be between 0.0 and 1.0 for dropout corruption")
+        elif (self.corruption_type == "bias"):
+            if not 0 <= self.severity:
+                raise ValueError("Severity must be positive for bias corruption")
+        elif (self.corruption_type == "gain"):
+            if not 0 <= self.severity:
+                raise ValueError("Severity must be positive for gain corruption")
         elif (self.corruption_type == "drift"):
             if not 0 <= self.severity:
                 raise ValueError("Severity must be positive for drift corruption")
@@ -62,11 +74,16 @@ class CorruptionFramework:
 
     def _bias_corruption(self, X):
         X_c = X.copy()
+
+        channel_std = X_c[:,:,self.channels].std(axis=1, keepdims=True)
+        X_c[:,:,self.channels] += self.severity * channel_std
+
         return X_c
 
 
     def _gain_corruption(self, X):
         X_c = X.copy()
+        X_c[:,:,self.channels] = X_c[:,:,self.channels] * self.severity
         return X_c
 
 
@@ -75,7 +92,6 @@ class CorruptionFramework:
         timesteps = X.shape[1]
         
         channel_std = X_c[:,:,self.channels].std(axis=1, keepdims=True)
-
         drift = np.linspace(0, self.severity, timesteps)[None,:,None]
 
         X_c[:,:,self.channels] += drift * channel_std
