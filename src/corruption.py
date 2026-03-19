@@ -48,7 +48,7 @@ class CorruptionFramework:
             raise ValueError("Corruption type must be one of: gaussian, dropout, drift, resolution")
 
     
-    def _stochastic_corruption(self, signal):
+    def _stochastic_corruption(self, X):
         X_c = X.copy()
 
         channel_std = X_c[:,:,self.channels].std(axis=1, keepdims=True)
@@ -67,7 +67,8 @@ class CorruptionFramework:
 
         for i in range(samples):
             idx = rng.choice(timesteps, n_corrupt, replace=False)
-            X_c[i, idx, self.channels] = 0
+            # X_c[i, idx, self.channels] = 0
+            X_c[i][np.ix_(idx, self.channels)] = 0
 
         return X_c
 
