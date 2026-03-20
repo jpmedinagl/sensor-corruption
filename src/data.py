@@ -32,8 +32,8 @@ def load_raw(path):
 
 
 def load_labels():
-    y_train = np.loadtxt(BASE / "train" / "y_train.txt").astype(int)
-    y_test = np.loadtxt(BASE / "test" / "y_test.txt").astype(int)
+    y_train = np.loadtxt(BASE / "train" / "y_train.txt").astype(int) - 1
+    y_test = np.loadtxt(BASE / "test" / "y_test.txt").astype(int) - 1
     
     return y_train, y_test
 
