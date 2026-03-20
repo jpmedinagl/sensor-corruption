@@ -45,7 +45,7 @@ $ source .venv/bin/activate
 
 Install required libraries
 ```
-(venv) $ pip install numpy ...
+(venv) $ pip install -r requirements.txt
 ```
 
 Run files
