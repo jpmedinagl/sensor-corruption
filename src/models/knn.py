@@ -107,19 +107,74 @@ def main():
         severities=[0.1, 0.3, 0.5]
     )
 
-        # Gyroscope drift
+    # Gyroscope drift
     evaluate_knn_with_corruption(
         corruption_type="drift",
         channels=GYRO,
-        severities=[0.1, 0.3, 0.5]
+        severities=[0.5, 1.0, 2.0, 4.0]
     )
 
     # Accelerometer drift
     evaluate_knn_with_corruption(
         corruption_type="drift",
         channels=ACCL,
-        severities=[0.1, 0.3, 0.5]
+        severities=[0.5, 1.0, 2.0, 4.0]
     )
-    
+
+    # Gyroscope stochastic noise
+    evaluate_knn_with_corruption(
+        corruption_type="stochastic",
+        channels=GYRO,
+        severities=[0.25, 0.5, 1.0, 1.25]
+    )
+
+    # Accelerometer stochastic noise
+    evaluate_knn_with_corruption(
+        corruption_type="stochastic",
+        channels=ACCL,
+        severities=[0.25, 0.5, 1.0, 1.25]
+    )
+
+    # Gyroscope bias
+    evaluate_knn_with_corruption(
+        corruption_type="bias",
+        channels=GYRO,
+        severities=[0.5, 1.0, 1.25, 2.0]
+    )
+
+    # Accelerometer bias
+    evaluate_knn_with_corruption(
+        corruption_type="bias",
+        channels=ACCL,
+        severities=[0.5, 1.0, 1.25, 2.0]
+    )
+
+    # Gyroscope gain
+    evaluate_knn_with_corruption(
+        corruption_type="gain",
+        channels=GYRO,
+        severities=[0.5, 0.75, 1.25, 2.0]
+    )
+
+    # Accelerometer gain
+    evaluate_knn_with_corruption(
+        corruption_type="gain",
+        channels=ACCL,
+        severities=[0.5, 0.75, 1.25, 2.0]
+    )
+
+    # Gyroscope resolution
+    evaluate_knn_with_corruption(
+        corruption_type="resolution",
+        channels=GYRO,
+        severities=[1, 2, 3, 4]
+    )
+
+    # Accelerometer resolution
+    evaluate_knn_with_corruption(
+        corruption_type="resolution",
+        channels=ACCL,
+        severities=[1, 2, 3, 4]
+    )
 if __name__ == "__main__":
     main()
