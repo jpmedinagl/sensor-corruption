@@ -45,7 +45,9 @@ class CorruptionFramework:
             if not 1 <= self.severity <= 6:
                 raise ValueError("Severity must be between 1 and 6 for resolution corruption")
         else:
-            raise ValueError("Corruption type must be one of: gaussian, dropout, drift, resolution")
+            raise ValueError(
+                "Corruption type must be one of: stochastic, dropout, bias, gain, drift, resolution"
+            )
 
     
     def _stochastic_corruption(self, X):
