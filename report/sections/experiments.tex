@@ -1,1 +1,17 @@
 \section{Experiments}
+All models are trained on the train/test split provided by the UCI HAR dataset.
+We performed various experiments to investigate the effects of our corruption framework on the
+models trained on the dataset.
+
+\subsection{Parameter Sweep}
+To characterize how each corruption type affects performance, we sweep each type across its
+severity levels and report accuracy and Macro-F1 as a function of severity. We evaluate all four
+models under three granularity conditions: accelerometer modality only, gyroscope modality only,
+and both modalities simultaneously.
+
+\subsection{Corruption-Aware Training}
+In the sweep above, models are trained on clean data and evaluated on corrupted data. To
+investigate whether exposure to corrupted data during training improves robustness, we additionally
+train each model on data corrupted at the same type and severity as the test data. This is
+motivated by prior work showing that training on missing data improves test-time recognition
+without requiring imputation \cite{hossain-2020}.

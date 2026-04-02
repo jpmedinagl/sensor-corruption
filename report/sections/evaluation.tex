@@ -1,1 +1,45 @@
 \section{Evaluation \& Results}
+
+\subsection{Evaluation Metrics}
+
+\subsection{Results}
+
+\paragraph{Baseline Performance.}
+We first evaluate classical models on raw sensor data. KNN achieves the highest performance
+(Accuracy 0.6505, Macro-F1 0.6374), while Logistic Regression and SVM perform worse due to limited
+feature representation. This highlights the importance of feature engineering for linear models.
+
+\paragraph{Effect of Dropout.}
+Dropout corruption consistently degrades performance as severity increases. The degradation is
+more pronounced for GYRO than ACCL, suggesting that gyroscope signals are more sensitive to
+missing data.
+
+\paragraph{Effect of Drift.}
+Drift has a strong negative impact, particularly on ACCL. Linear models degrade significantly
+under drift due to sensitivity to distribution shifts, while KNN is comparatively more stable.
+
+\paragraph{Effect of Gain.}
+Gain exhibits non-monotonic behavior. When gain $< 1$, performance decreases moderately due to
+signal attenuation. However, when gain $> 1$, KNN performance improves substantially, indicating
+that amplification can enhance class separability. This suggests that gain does not purely act as
+corruption, but can implicitly reweight informative features.
+
+\paragraph{Effect of Bias.}
+Bias introduces moderate degradation across all models, with ACCL being more affected than GYRO.
+This indicates that constant offsets distort magnitude-based features.
+\paragraph{Effect of Stochastic Noise.}
+Stochastic noise has minimal impact on performance and occasionally leads to slight improvements.
+This suggests that models are inherently robust to small perturbations and may benefit from noise
+as a form of regularization.
+
+\paragraph{Effect of Resolution.}
+Resolution changes have negligible impact across all models, indicating that activity recognition
+relies on coarse motion patterns rather than fine-grained signal precision.
+
+\paragraph{Overall Trends.}
+Across all corruption types, we observe that not all perturbations degrade performance
+monotonically. While dropout and drift significantly harm performance, stochastic noise and
+resolution have minimal impact. Interestingly, gain can even improve performance under certain
+conditions. These findings highlight that different corruption types affect models in fundamentally
+different ways, and robustness depends both on the corruption type and the model architecture.
+
