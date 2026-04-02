@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import f1_score, confusion_matrix
 import torch
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
@@ -11,12 +11,32 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
 if SRC_DIR not in sys.path:
     sys.path.append(SRC_DIR)
+METRICS_FILE = os.path.abspath(os.path.join(CURRENT_DIR, "..", "..", "lstm_metrics.txt"))
 
 from data import load_raw_data, GYRO, ACCL
 from corruption import CorruptionFramework
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def log_test_results(
+    test_case: str,
+    test_loss: float | None,
+    test_acc: float,
+    macro_f1: float,
+    confusion: np.ndarray | None = None,
+) -> None:
+    with open(METRICS_FILE, "a", encoding="utf-8") as f:
+        f.write(f"LSTM Results ({test_case})\n")
+        # if test_loss is not None:
+        #     f.write(f"Test Loss: {test_loss:.4f}\n")
+        f.write(f"Accuracy: {test_acc:.4f}\n")
+        f.write(f"Macro-F1: {macro_f1:.4f}\n")
+        if confusion is not None:
+            f.write("Confusion Matrix:\n")
+            f.write(np.array2string(confusion))
+            f.write("\n")
 
 def make_loader(X: np.ndarray, y: np.ndarray, batch_size: int, shuffle: bool) -> DataLoader:
     X_tensor = torch.tensor(X, dtype=torch.float32)
@@ -81,6 +101,7 @@ def train_epoch(
         correct += (preds == y_batch).sum().item()
         total += batch_size
 
+    # returns train loss, train accuracy
     return running_loss / total, correct / total
 
 
@@ -116,6 +137,8 @@ def evaluate_epoch(
 
     y_true = np.concatenate(y_true_all)
     y_pred = np.concatenate(y_pred_all)
+
+    # returns test loss, test accuracy, gt target, predicted target
     return running_loss / total, correct / total, y_true, y_pred
 
 def evaluate_lstm(
@@ -174,18 +197,10 @@ def evaluate_lstm(
 
     test_loss, test_acc, y_true, y_pred = evaluate_epoch(model, test_loader, criterion, device)
 
-    acc = accuracy_score(y_true, y_pred)
     macro_f1 = f1_score(y_true, y_pred, average="macro")
     cm = confusion_matrix(y_true, y_pred)
 
-    print(f"=== LSTM Results ({label}) ===")
-    print(f"Test Loss: {test_loss:.4f}")
-    print(f"Test Accuracy: {test_acc:.4f}")
-    print(f"Accuracy: {acc:.4f}")
-    print(f"Macro-F1: {macro_f1:.4f}")
-    print("Confusion Matrix:")
-    print(cm)
-    print()
+    log_test_results(label, test_loss, test_acc, macro_f1, cm)
 
     return model
 
@@ -204,8 +219,10 @@ def evaluate_lstm_with_corruption(
         raise ValueError("corrupted_dataset must be one of: train, test, both")
 
     print(
-        f"=== LSTM Corruption Results: {corruption_type}, "
-        f"channels={channels}, dataset={corrupted_dataset} ==="
+        f"=== Currently training: "
+        f"corruption type={corruption_type}, "
+        f"channels={"GYRO" if channels == GYRO else "ACCL"}, "
+        f"dataset={corrupted_dataset} ==="
     )
 
     criterion = nn.CrossEntropyLoss()
@@ -229,6 +246,8 @@ def evaluate_lstm_with_corruption(
             severity=severity,
         )
 
+        channels_label = "GYRO" if channels == GYRO else "ACCL"
+
         X_train_eval = X_train
         X_test_eval = X_test
 
@@ -245,8 +264,8 @@ def evaluate_lstm_with_corruption(
                 X_test_eval,
                 y_test,
                 label=(
-                    f"{corruption_type} severity={severity} "
-                    f"(dataset={corrupted_dataset})"
+                    f"{corruption_type} severity={severity}, "
+                    f"dataset={corrupted_dataset}, channels={channels_label}"
                 ),
                 epochs=epochs,
                 batch_size=batch_size,
@@ -254,22 +273,25 @@ def evaluate_lstm_with_corruption(
             continue
 
         test_loader = make_loader(X_test_eval, y_test, batch_size=batch_size, shuffle=False)
-        _, _, y_true, y_pred = evaluate_epoch(model, test_loader, criterion, device)
+        _, test_acc, y_true, y_pred = evaluate_epoch(model, test_loader, criterion, device)
 
-        acc = accuracy_score(y_true, y_pred)
         macro_f1 = f1_score(y_true, y_pred, average="macro")
 
-        print(f"Severity={severity}: Accuracy={acc:.4f}, Macro-F1={macro_f1:.4f}")
+        test_case = (
+            f"{corruption_type} severity={severity}, "
+            f"dataset={corrupted_dataset}, channels={channels_label}"
+        )
+        log_test_results(test_case, None, test_acc, macro_f1)
 
     print()
 
 def sweep():
     channels = [GYRO, ACCL]
-    corruption = {"dropout": [0.1, 0.3, 0.5],
-                  "drift": [0.5, 1.0, 2.0, 4.0],
+    corruption = {"dropout": [0.1, 0.2, 0.3, 0.5],
+                  "drift": [0.5, 1.0, 2.0, 4.0, 8.0],
                   "stochastic": [0.25, 0.5, 1.0, 1.25],
-                  "bias": [0.5, 1.0, 1.25, 2.0],
-                  "gain": [0.5, 0.75, 1.25, 2.0],
+                  "bias": [0.5, 1.0, 1.25, 1.5, 2.0],
+                  "gain": [0.25, 0.5, 0.75, 0.9, 1.1, 1.25, 1.5, 2.0],
                   "resolution": [1, 2, 3, 4]
                 }
     corrupted_datasets = ['train', 'test', 'both']
@@ -289,6 +311,9 @@ def sweep():
     print()
 
 def main():
+    with open(METRICS_FILE, "w", encoding="utf-8") as f:
+        f.write("LSTM metrics log\n\n")
+
     # Raw data baseline
     X_train_raw, y_train_raw, X_test_raw, y_test_raw = load_raw_data()
 
@@ -299,94 +324,6 @@ def main():
         y_test_raw,
         label="raw sequence",
     )
-
-    torch.save(baseline_model.state_dict(), "lstm.pth")
-    print("Saved PyTorch model state to lstm.pth")
-    print()
-
-    # # Gyroscope dropout
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="dropout",
-    #     channels=GYRO,
-    #     severities=[0.1, 0.3, 0.5]
-    # )
-
-    # # Accelerometer dropout
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="dropout",
-    #     channels=ACCL,
-    #     severities=[0.1, 0.3, 0.5]
-    # )
-
-    # # Gyroscope drift
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="drift",
-    #     channels=GYRO,
-    #     severities=[0.5, 1.0, 2.0, 4.0]
-    # )
-
-    # # Accelerometer drift
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="drift",
-    #     channels=ACCL,
-    #     severities=[0.5, 1.0, 2.0, 4.0]
-    # )
-
-    # # Gyroscope stochastic noise
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="stochastic",
-    #     channels=GYRO,
-    #     severities=[0.25, 0.5, 1.0, 1.25]
-    # )
-
-    # # Accelerometer stochastic noise
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="stochastic",
-    #     channels=ACCL,
-    #     severities=[0.25, 0.5, 1.0, 1.25]
-    # )
-
-    # # Gyroscope bias
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="bias",
-    #     channels=GYRO,
-    #     severities=[0.5, 1.0, 1.25, 2.0]
-    # )
-
-    # # Accelerometer bias
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="bias",
-    #     channels=ACCL,
-    #     severities=[0.5, 1.0, 1.25, 2.0]
-    # )
-
-    # # Gyroscope gain
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="gain",
-    #     channels=GYRO,
-    #     severities=[0.5, 0.75, 1.25, 2.0]
-    # )
-
-    # # Accelerometer gain
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="gain",
-    #     channels=ACCL,
-    #     severities=[0.5, 0.75, 1.25, 2.0]
-    # )
-
-    # # Gyroscope resolution
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="resolution",
-    #     channels=GYRO,
-    #     severities=[1, 2, 3, 4]
-    # )
-
-    # # Accelerometer resolution
-    # evaluate_lstm_with_corruption(
-    #     corruption_type="resolution",
-    #     channels=ACCL,
-    #     severities=[1, 2, 3, 4]
-    # )
 
     # Full sweep across train/test/both corruption modes.
     sweep()
