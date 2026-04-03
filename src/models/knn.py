@@ -3,6 +3,17 @@ import sys
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+def save_confusion_matrix(y_true, y_pred, title, filename):
+    cm = confusion_matrix(y_true, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+
+    disp.plot()
+    plt.title(title)
+    plt.savefig(filename, dpi=200, bbox_inches="tight")
+    plt.close()
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
@@ -60,7 +71,8 @@ def evaluate_knn_with_corruption(corruption_type: str, channels, severities):
         X_test_corrupt_flat = flatten_timeseries(X_test_corrupt)
 
         y_pred = model.predict(X_test_corrupt_flat)
-
+        if (corruption_type == "dropout" and channels == GYRO and severity == 0.5):
+            save_confusion_matrix(y_test, y_pred, "KNN - GYRO Dropout (severity=0.5)", "cm_knn_dropout_gyro.png")
         acc = accuracy_score(y_test, y_pred)
         macro_f1 = f1_score(y_test, y_pred, average="macro")
 

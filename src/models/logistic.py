@@ -5,6 +5,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+def save_confusion_matrix(y_true, y_pred, title, filename):
+    cm = confusion_matrix(y_true, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+
+    disp.plot()
+    plt.title(title)
+    plt.savefig(filename, dpi=200, bbox_inches="tight")
+    plt.close()
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))
@@ -38,6 +49,13 @@ def evaluate_logistic(X_train, y_train, X_test, y_test, label: str):
 
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+
+    save_confusion_matrix(
+        y_test,
+        y_pred,
+        f"Logistic - {label}",
+        f"cm_logistic_{label.replace(' ', '_')}.png"
+    )
 
     acc = accuracy_score(y_test, y_pred)
     macro_f1 = f1_score(y_test, y_pred, average="macro")
@@ -75,7 +93,8 @@ def evaluate_logistic_with_corruption(corruption_type, channels, severities):
         X_test_flat = flatten_timeseries(X_test_corrupt)
 
         y_pred = model.predict(X_test_flat)
-
+        if (corruption_type == "drift" and channels == ACCL and severity == max(severities)):
+            save_confusion_matrix(y_test,y_pred, f"Logistic - ACCL Drift (severity={severity})", "cm_logistic_drift_accl.png")
         acc = accuracy_score(y_test, y_pred)
         macro_f1 = f1_score(y_test, y_pred, average="macro")
 
