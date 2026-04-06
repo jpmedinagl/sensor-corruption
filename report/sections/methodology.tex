@@ -10,7 +10,9 @@
 Our investigation was focused on the Human Activity Recognition using Smartphones dataset from
 Reyes-Ortiz et al. \cite{reyes-ortiz-2013}. The dataset provided was already split between training
 and test data. The dataset contains the raw signals as well as a dataset containing 561 features
-that were extracted from each signal window using the frequency domain. Due to the feature dataset
+that were extracted from each signal window using the frequency domain.
+
+Due to the feature dataset
 removing the time component of the signal, we decided against using the feature dataset because
 manipulating the featured signals would not be possible. Our study focuses on the raw signal data,
 therefore we applied our corruption framework directly on the raw signal data. Note that it would be
@@ -19,30 +21,62 @@ performing the feature engineering outlined in their work. However that is beyon
 of this study, we simply decided to work against the raw signal data itself and compare against
 clean data.
 
+\subsection{Data Representation}
+The dataset consists of multivariate time-series sensor data with shape $(N, T, C)$, where $N$ is the number
+of samples, $T$ is the number of timesteps per window, and $C$ is the number of sensor
+channels.
+
+Since classical machine learning models require fixed-length feature vectors, we transform
+each sample into a one-dimensional representation by flattening across the temporal and channel
+dimensions:
+
+\[
+X_{\text{flat}} \in \mathbb{R}^{N \times (T \cdot C)}.
+\]
+
+The channel set consists of two sensor modalities with three axes each: body accelerometer
+$(x,y,z)$ and gyroscope $(x,y,z)$.
+
 \subsection{Corruption Framework}
 The corruption framework is built along three dimensions: \textit{Type}, \textit{Granularity},
 and \textit{Severity}.
 
 \subsubsection{Corruption Type}
-We investigated various different corruption types:
+We investigated various different corruption types, each designed to mimic a distinct sensor failure mode:
 
 \begin{enumerate}
-    \item Stochastic: Adds random noise to the signal window, simulating stochastic sensor noise.
-    \item Dropout: Randomly zeros out a fraction of timesteps in the signal window. Simulates
-        intermittent sensor failure or signal loss.
-    \item Bias: Adds a constant offset to the signal window. Simulates miscalibration or aging.
-    \item Amplification (gain > 1): Scales the signal by a constant multiplier greater than 1.
-        Simulates sensor sensitivity amplification.
-    \item Attenuation (0 < gain < 1): Scales the signal by a constant multiplier smaller than 1.
-        Simulates sensor sensitivity degradation.
-    \item Drift: Adds a linearly growing offset over the signal window. Simulates gradual sensor
-        drift over time.
+    \item \textbf{Stochastic noise:} Adds random noise to the signal window,
+    \[
+    X' = X + \lambda\,\sigma(X)\,\epsilon, \quad \epsilon \sim \mathcal{N}(0,1).
+    \]
+    This simulates stochastic sensor noise.
+
+    \item \textbf{Dropout:} Randomly zeros out a fraction of timesteps in the signal window.
+    Simulates intermittent sensor failure or signal loss.
+
+    \item \textbf{Bias:} Adds a constant offset to the signal window proportional to the channel's standard deviation,
+    \[
+    X' = X + \lambda\,\sigma(X).
+    \]
+    This simulates miscalibration or sensor aging.
+
+    \item \textbf{Gain:} Scales the signal by a constant multiplier,
+    \[
+    X' = \lambda X,
+    \]
+    where amplification ($\lambda > 1$) simulates sensor sensitivity amplification and
+    attenuation ($0 < \lambda < 1$) simulates sensor sensitivity degradation.
+    \item \textbf{Drift:} Adds a linearly growing offset over the signal window,
+    \[
+    X'_t = X_t + d_t\,\sigma(X), \quad d_t = \text{linspace}(0,\lambda,T).
+    \]
+    This simulates gradual sensor drift over time.
 \end{enumerate}
 
 \subsubsection{Granularity}
 Corruption can be applied at different levels of granularity by specifying which channels are
 affected by the corruption. The dataset contains 6 channels across 2 sensors. Body accelerometer
-(x, y, z) and gyroscope (x, y, z). This allows corruption to tb eapplied to an entire sensor
+(x, y, z) and gyroscope (x, y, z). This allows corruption to be applied to an entire sensor
 modality, a single axis within a modality, or any combination, enabling targeted investigation.
 
 Note that although possible, we decided against investigating applying multiple corruption types
@@ -59,18 +93,63 @@ applied. The meaning of severity is type-specific.
     \item Dropout: Corresponds to the fraction of timesteps zeroed out in the window.
     \item Bias: Corresponds to a fraction of the channel's standard deviation added as a constant
         offset.
-    \item Amplification: Corresponds to a constant multiplier greater than 1 applied to the signal.
-    \item Attenuation: Corresponds to a constant multiplier smaller than 1 applied to the signal.
+    \item Gain: Corresponds to a constant multiplier applied to the signal.
     \item Drift: Corresponds to a multiplier of the channel's standard deviation by the end of the
         signal window.
 \end{enumerate}
 
 \subsection{Models}
+We evaluate three classical machine learning models: K-Nearest Neighbors (KNN), Logistic Regression,
+and Support Vector Machine (SVM).
 
-\subsubsection{K-Nearest Neighbors}
+\subsubsection{K-Nearest Neighbors (KNN)}
+We use a KNN classifier with $k=5$ and Euclidean distance. The model operates directly on flattened feature vectors without additional preprocessing.
 
 \subsubsection{Logistic Regression}
+We implement Logistic Regression using a pipeline that includes feature standardization followed by a linear probabilistic classifier:
 
-\subsubsection{Support Vector Machine}
+\[
+\text{Pipeline} = \text{StandardScaler} \rightarrow \text{LogisticRegression}
+\]
 
-\subsubsection{Long Short-Term Memory}
+We use the \texttt{lbfgs} solver with a maximum of 3000 iterations to ensure convergence.
+
+\subsubsection{Support Vector Machine (SVM)}
+We use a linear SVM (LinearSVC) combined with feature standardization:
+
+\[
+\text{Pipeline} = \text{StandardScaler} \rightarrow \text{LinearSVC}
+\]
+
+The maximum number of iterations is set to 5000 to ensure stable training.
+
+\subsection{Training and Evaluation Protocol}
+All models are trained on clean training data and evaluated on both clean and
+corrupted test sets. Reusing the clean-trained model across corruption levels isolates the
+effect of test-time sensor degradation.
+
+We report:
+\begin{itemize}
+    \item Accuracy
+    \item Macro F1-score
+    \item Confusion Matrix (for selected experiments)
+\end{itemize}
+
+\subsection{Experimental Setup}
+
+For each corruption type, we vary the severity parameter across predefined ranges and evaluate model performance on:
+
+\begin{itemize}
+    \item Accelerometer channels (ACCL)
+    \item Gyroscope channels (GYRO)
+\end{itemize}
+
+This allows us to analyze:
+\begin{itemize}
+    \item Cross-model robustness (KNN vs Logistic vs SVM)
+    \item Modality-specific sensitivity (ACCL vs GYRO)
+    \item Performance degradation trends across corruption severity
+
+This design ensures that corruption is isolated to specific modalities, allowing controlled analysis of modality-specific robustness.
+
+\end{itemize}
