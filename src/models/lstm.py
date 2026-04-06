@@ -212,6 +212,7 @@ def evaluate_lstm_with_corruption(
     corrupted_dataset: str = "test",
     epochs: int = 80,
     batch_size: int = 64,
+    pretrained_model: HAR_LSTM | None = None,
 ):
     X_train, y_train, X_test, y_test = load_raw_data()
 
@@ -227,17 +228,18 @@ def evaluate_lstm_with_corruption(
 
     criterion = nn.CrossEntropyLoss()
 
-    model = None
+    model = pretrained_model
     if corrupted_dataset == "test":
-        model = evaluate_lstm(
-            X_train,
-            y_train,
-            X_test,
-            y_test,
-            label=f"clean train baseline for {corruption_type}",
-            epochs=epochs,
-            batch_size=batch_size,
-        )
+        if model is None:
+            model = evaluate_lstm(
+                X_train,
+                y_train,
+                X_test,
+                y_test,
+                label="clean train baseline",
+                epochs=epochs,
+                batch_size=batch_size,
+            )
 
     for severity in severities:
         framework = CorruptionFramework(
@@ -276,16 +278,17 @@ def evaluate_lstm_with_corruption(
         _, test_acc, y_true, y_pred = evaluate_epoch(model, test_loader, criterion, device)
 
         macro_f1 = f1_score(y_true, y_pred, average="macro")
+        cm = confusion_matrix(y_true, y_pred)
 
         test_case = (
             f"{corruption_type} severity={severity}, "
             f"dataset={corrupted_dataset}, channels={channels_label}"
         )
-        log_test_results(test_case, None, test_acc, macro_f1)
+        log_test_results(test_case, None, test_acc, macro_f1, cm)
 
     print()
 
-def sweep():
+def sweep(baseline_model: HAR_LSTM | None = None):
     channels = [GYRO, ACCL]
     corruption = {"dropout": [0.1, 0.2, 0.3, 0.5],
                   "drift": [0.5, 1.0, 2.0, 4.0, 8.0],
@@ -294,7 +297,7 @@ def sweep():
                   "gain": [0.25, 0.5, 0.75, 0.9, 1.1, 1.25, 1.5, 2.0],
                   "resolution": [1, 2, 3, 4]
                 }
-    corrupted_datasets = ['train', 'test', 'both']
+    corrupted_datasets = ['test', 'train', 'both']
 
     for corrupted_dataset in corrupted_datasets:
         print(f"\n===== Corrupt dataset mode: {corrupted_dataset} =====")
@@ -306,6 +309,7 @@ def sweep():
                     channels=channel,
                     severities=severities,
                     corrupted_dataset=corrupted_dataset,
+                    pretrained_model=baseline_model if corrupted_dataset == "test" else None,
                 )
 
     print()
@@ -326,7 +330,7 @@ def main():
     )
 
     # Full sweep across train/test/both corruption modes.
-    sweep()
+    sweep(baseline_model=baseline_model)
 
 if __name__ == "__main__":
     main()
