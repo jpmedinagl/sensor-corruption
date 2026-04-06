@@ -1,0 +1,44 @@
+\section{Introduction}
+
+% Plan:
+% - introduce HAR and cite lara and reyes-ortiz (base papers for HAR)
+% - add background information on sensors being faulty (different kinds of faults)
+% - works that investigated missing sensor data cite saha and hossain (papers on missing data)
+% - plan of what we investigated (corruption framework) and some of the models we used
+% - answer question: what is the point of this paper?
+%   - answer: provide a baseline for sensor corruption covering uncovered corruption types
+%   - could have a stronger answer/conclusion but this will depend on the experiments and results
+
+Human Activity Recognition (HAR) is a very active area of research due to technological
+advancements of smartphones, microelectronics, and sensors. This is the purpose of
+\textit{Ubiquitous sensing}, a research area focused of collecting data acquired from sensors and
+utilizing it to extract information \cite{lara-2013}. The recognition of human activites has
+many uses in healthcase, monitoring, and human-computer interaction \cite{lara-2013}.
+Reyes-Ortiz et al. \cite{reyes-ortiz-2013} provided the Human Activity Recognition Using
+Smartphones (UCI HAR) dataset, a benchmark built from accelerometer and gyroscope signals collected
+from 30 subjects performing activities. Subsequent deep learning approaches have matched or
+exceeded their results on clean data \cite{ronao-2016}.
+
+Despite the strong performance, real-world sensor systems regularly produce degraded data. Sensors
+age, drift, and miscalibrate, for example: wireless transmission introduces packet loss
+\cite{ni-2009}; battery depletion or physical damage can cause intermittent failure \cite{ni-2009}.
+The resulting corruption span a broad range of failures that go beyond simple missing data,
+including constant bias offsets, gradual temporal drift, amplification/attenuation gain shifts,
+etc. Understanding how HAR models respond to these different forms of degradation is important for
+building reliable activity recognition systems that generalize beyond clean data.
+
+A number of works have investigated the problem of missing sensor data in HAR \cite{hossain-2018,
+hossain-2020, saha-2025}, demonstrating that random dropout can substaintially degrade
+classification accuracy. However these works focus on missing sensor data only, missing other
+sensor fault types. To the best of our knowledge, no prior work has provided a systematic study of
+how structured sensor corruption, varying by type, severity, and granularity (sensor modality)
+affects HAR classifier performance.
+
+In this work, we address this gap by introducing a structured corruption framework defined along
+three dimensions: corruption type, granularity, and severity. Our framework applies six sensor
+fault types: stochastic noise, dropout, bias, gain (amplification, and attenuation), and drift, at
+controlled severity levels and at granularities ranging from individual signal axes, to full sensor
+modalities. We apply this framework to the UCI HAR dataset, training four classifiers on clean and
+corrupted data, and evaluating each under systematic corruption. We thus provide the first baseline
+for understanding how different categories of sensor corruption affect activity recognition
+performance.

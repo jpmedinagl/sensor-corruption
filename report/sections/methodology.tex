@@ -1,0 +1,110 @@
+\section{Methodology}
+
+% Plan:
+% - dataset section: the dataset we used (UCI HAR), mention how we use RAW signals for our analysis
+% - corruption framework: introduce our corruption framework with the corruption type, granularity,
+%   and severity, subsection each of these (expand on the different types, etc)
+% - models: models that we used for testing, why did we pick these, etc
+
+\subsection{Dataset}
+Our investigation was focused on the Human Activity Recognition using Smartphones dataset from
+Reyes-Ortiz et al. \cite{reyes-ortiz-2013}. The dataset provided was already split between training
+and test data. The dataset contains the raw signals as well as a dataset containing 561 features
+that were extracted from each signal window using the frequency domain. Due to the feature dataset
+removing the time component of the signal, we decided against using the feature dataset because
+manipulating the featured signals would not be possible. Our study focuses on the raw signal data,
+therefore we applied our corruption framework directly on the raw signal data. Note that it would be
+possible to reconstruct the frequency-based feature dataset after a corruption is applied by
+performing the feature engineering outlined in their work. However that is beyond the scope
+of this study, we simply decided to work against the raw signal data itself and compare against
+clean data.
+
+\subsection{Corruption Framework}
+The corruption framework is built along three dimensions: \textit{Type}, \textit{Granularity},
+and \textit{Severity}.
+
+\subsubsection{Corruption Type}
+We investigated various different corruption types:
+
+\begin{enumerate}
+    \item Stochastic: Adds random noise to the signal window, simulating stochastic sensor noise.
+    \item Dropout: Randomly zeros out a fraction of timesteps in the signal window. Simulates
+        intermittent sensor failure or signal loss.
+    \item Bias: Adds a constant offset to the signal window. Simulates miscalibration or aging.
+    \item Amplification (gain > 1): Scales the signal by a constant multiplier greater than 1.
+        Simulates sensor sensitivity amplification.
+    \item Attenuation (0 < gain < 1): Scales the signal by a constant multiplier smaller than 1.
+        Simulates sensor sensitivity degradation.
+    \item Drift: Adds a linearly growing offset over the signal window. Simulates gradual sensor
+        drift over time.
+\end{enumerate}
+
+\subsubsection{Granularity}
+Corruption can be applied at different levels of granularity by specifying which channels are
+affected by the corruption. The dataset contains 6 channels across 2 sensors. Body accelerometer
+(x, y, z) and gyroscope (x, y, z). This allows corruption to tb eapplied to an entire sensor
+modality, a single axis within a modality, or any combination, enabling targeted investigation.
+
+Note that although possible, we decided against investigating applying multiple corruption types
+to the data at a time. The reason for this being that we wanted to targeted investigation of
+corruption types, mixing corruption types would make harder to attribute a corruption type.
+
+\subsubsection{Severity}
+Each corruption type has an associated severity parameter that controls the degree of corruption
+applied. The meaning of severity is type-specific.
+
+\begin{enumerate}
+    \item Stochastic: Corresponds to the fraction of channel's standard deviation used as the noise
+        scale.
+    \item Dropout: Corresponds to the fraction of timesteps zeroed out in the window.
+    \item Bias: Corresponds to a fraction of the channel's standard deviation added as a constant
+        offset.
+    \item Amplification: Corresponds to a constant multiplier greater than 1 applied to the signal.
+    \item Attenuation: Corresponds to a constant multiplier smaller than 1 applied to the signal.
+    \item Drift: Corresponds to a multiplier of the channel's standard deviation by the end of the
+        signal window.
+\end{enumerate}
+
+
+\subsection{Models}
+
+We evaluate three classical machine learning models: K-Nearest Neighbors (KNN), Logistic
+Regression, and Support Vector Machine (SVM) as well as a more complex model: Long Short-Term
+Memory (LSTM) model.
+
+\paragraph{K-Nearest Neighbors (KNN).}
+We use a KNN classifier with $k=5$ and Euclidean distance. The model operates directly on flattened
+feature vectors without additional preprocessing.
+
+\paragraph{Logistic Regression.}
+We implement Logistic Regression using a pipeline that includes feature standardization followed by
+a linear probabilistic classifier:
+
+\[
+\text{Pipeline} = \text{StandardScaler} \rightarrow \text{LogisticRegression}
+\]
+
+We use the \texttt{lbfgs} solver with a maximum of 3000 iterations to ensure convergence.
+
+\paragraph{Support Vector Machine (SVM).}
+We use a linear SVM (LinearSVC) combined with feature standardization:
+
+\[
+\text{Pipeline} = \text{StandardScaler} \rightarrow \text{LinearSVC}
+\]
+
+The maximum number of iterations is set to 5000 to ensure stable training.
+
+% \subsection{Training and Evaluation Protocol}
+
+% All models are trained on clean training data and evaluated on both clean and corrupted test data.
+
+% We report:
+% \begin{itemize}
+%     \item Accuracy
+%     \item Macro F1-score
+%     \item Confusion Matrix (for selected experiments)
+% \end{itemize}
+
+% For corruption experiments, models are trained once on clean data and reused across all
+% corruption severities to isolate the effect of test-time corruption.
