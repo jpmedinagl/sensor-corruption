@@ -7,7 +7,7 @@
 \paragraph{Baseline Performance.}
 As mentioned in our Methodology section, our corruption framework requires the raw data to perform
 the various corruption transformations on it. However, the processed data which does not include
-the time component produces much higher accuracy and macro-f1 scores due to the fact that many more
+the time component produces much higher accuracy and macro-$F_1$ scores due to the fact that many more
 features are generated. We thus want to establish the baseline performance of the raw data against
 the processed data to contextualize our results of corruption on the raw data. Figure 
 \ref{fig:baseline} shows how the processed data achieves much higher performance than the raw data
@@ -19,28 +19,28 @@ LSTM on the processed data is not appropriate.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
-    \caption{Baseline Macro-F1 score for the raw vs processed data against the various models 
+    \caption{Baseline Macro-$F_1$ score for the raw vs processed data against the various models 
     studied.}
     \label{fig:baseline}
 \end{figure}
 
 \paragraph{Effect of Dropout.}
-Figure \ref{fig:dropout} outlines the effects of dropout corruption. The macro-f1 score decreases
-significantly only for the KNN model, while for the other models (logistic, SVM, LSTM) the macro-f1
+Figure \ref{fig:dropout} outlines the effects of dropout corruption. The macro-$F_1$ score decreases
+significantly only for the KNN model, while for the other models (logistic, SVM, LSTM) the macro-$F_1$
 score decreases steadily. This supports our earlier point that dropout corruption is currently the
 only corruption type that is being studied in literature and does not significantly decrease
-accuracy or macro-f1 score except up to the point that dropout corruption removes test data.
+accuracy or macro-$F_1$ score except up to the point that dropout corruption removes test data.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Dropout_Macro-F1.png}
-    \caption{Macro-F1 score for the dropout corruption on the test dataset on the various models.}
+    \caption{Macro-$F_1$ score for the dropout corruption on the test dataset on the various models.}
     \label{fig:dropout}
 \end{figure}
 
 \paragraph{Effect of Drift.}
 Figure \ref{fig:drift} outlines the effects of drift corruption. This corruption type significantly
-affects the models. As severity increases, we can observe that the macro-f1 score significantly
+affects the models. As severity increases, we can observe that the macro-$F_1$ score significantly
 decreases for all models. LSTM is the model most negatively affected by the corruption. The reason
 why drift corruption has a more negative impact than the dropout corruption is because drift
 corruption corrupts every timestep in the signal window with a monotonically increasing offset.
@@ -57,7 +57,7 @@ systems.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Drift_Macro-F1.png}
-    \caption{Macro-F1 score for the drift corruption on the test dataset on the various models.}
+    \caption{Macro-$F_1$ score for the drift corruption on the test dataset on the various models.}
     \label{fig:drift}
 \end{figure}
 
@@ -66,7 +66,7 @@ Gain corruption is separated into amplification (gain $> 1$) and attenuation (ga
 that gain $= 1$ is the baseline performance without any corruption.
 
 Figure \ref{fig:attenuation} outlines the effects when gain $< 1$. As the severity decreases (the
-corruption becomes more significant), we can observe that the macro-f1 score decreases for some
+corruption becomes more significant), we can observe that the macro-$F_1$ score decreases for some
 models. We can observe that the logistic, SVM, and LSTM models are largely unaffected by
 attenuation. The only model significantly affected by attenuation is KNN. The reason is that
 attenuation scales the test signal values down uniformly, moving them away from the region of the
@@ -78,7 +78,7 @@ uniform scaling of the input.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_lt_1)_Macro-F1.png}
-    \caption{Macro-F1 score for the gain corruption (attenuation) on the test dataset on the
+    \caption{Macro-$F_1$ score for the gain corruption (attenuation) on the test dataset on the
     various models.}
     \label{fig:attenuation}
 \end{figure}
@@ -87,7 +87,7 @@ Figure \ref{fig:amplification} outlines the effects when gain $> 1$.
 Amplification scales the test signal values up uniformly, moving test points further away from the
 origin in the feature space. Logistic regression and SVM are largely unaffected because their
 decision boundaries are defined by the direction of feature differences rather than their absolute
-magnitude, making them inherently more invariant to uniform scaling. Surprisingly, KNN macro-F1
+magnitude, making them inherently more invariant to uniform scaling. Surprisingly, KNN macro-$F_1$
 scores increase as severity increases, which is the inverse of the attenuation effect. A plausible
 explanation is that the clean training and test data are not perfectly aligned in scale.
 Amplification may move test samples closer to their true class cluster in the training set. This
@@ -96,14 +96,14 @@ is an unexpected finding that should be investigated in future work.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_gt_1)_Macro-F1.png}
-    \caption{Macro-F1 score for the gain corruption (amplification) on the test dataset on the
+    \caption{Macro-$F_1$ score for the gain corruption (amplification) on the test dataset on the
     various models.}
     \label{fig:amplification}
 \end{figure}
 
 \paragraph{Effect of Bias.}
 Figure \ref{fig:bias} outlines the effects of bias corruption. This corruption type also
-significantly affects the models. As severity increases, we can observe that the macro-f1 score
+significantly affects the models. As severity increases, we can observe that the macro-$F_1$ score
 decreases significantly for all models. Similarly with drift corruption, LSTM is the model most
 affected by the bias corruption. The reason why bias corruption has a significant impact is because
 bias corruption shifts the entire signal by a constant offset, moving it outside the distribution
@@ -114,7 +114,7 @@ highlights the importance of training models robust to additional corruption typ
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Bias_Macro-F1.png}
-    \caption{Macro-F1 score for the bias corruption on the test dataset on the various models.}
+    \caption{Macro-$F_1$ score for the bias corruption on the test dataset on the various models.}
     \label{fig:bias}
 \end{figure}
 
