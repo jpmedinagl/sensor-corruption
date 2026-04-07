@@ -100,7 +100,7 @@ applied. The meaning of severity is type-specific.
 
 \subsection{Models}
 We evaluate three classical machine learning models: K-Nearest Neighbors (KNN), Logistic Regression,
-and Support Vector Machine (SVM).
+and Support Vector Machine (SVM), along with one deep learning model: Long Short-Term Memory (LSTM).
 
 \subsubsection{K-Nearest Neighbors (KNN)}
 We use a KNN classifier with $k=5$ and Euclidean distance. The model operates directly on flattened feature vectors without additional preprocessing.
@@ -122,6 +122,64 @@ We use a linear SVM (LinearSVC) combined with feature standardization:
 \]
 
 The maximum number of iterations is set to 5000 to ensure stable training.
+
+\subsubsection{Long Short-Term Memory (LSTM)}
+We implement the LSTM framework described by \cite{saha-2025} in their
+investigation of the effects of missing sensor data on activity classification
+using the UCI HAR dataset, as shown in Figure~\ref{fig:lstmArchitecture}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/lstmArchitecture.png}
+    \caption{LSTM Network Architecture. Reproduced from \cite{saha-2025}.}
+    \label{fig:lstmArchitecture}
+\end{figure}
+
+Unlike the flattened inputs used with the classical models,
+each sample is represented as $X_n=[x_1, x_2, ..., x_T]$,
+where $x_t\in\mathbb{R}^C$ is the sensor data at time $t$,
+with $C$ sensor channels.
+
+At each timestep, the LSTM updates the hidden state $h_t$ and the cell state $c_t$
+with the following equations:
+\begin{enumerate}
+\item Forget Gate:
+\[
+f_t = \sigma(W_f x_t + U_f h_{t-1} + b_f)
+\]
+\item Input Gate:
+\[
+i_t = \sigma(W_i x_t + U_i h_{t-1} + b_i)
+\]
+\item Output Gate:
+\[
+o_t = \sigma(W_o x_t + U_o h_{t-1} + b_o)
+\]
+\item Candidate Cell state:
+\[
+\tilde{c}_t = \tanh(W_c x_t + U_c h_{t-1} + b_c)
+\]
+\item Cell State Update:
+\[
+c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t
+\]
+\item Hidden State Update:
+\[
+h_t = o_t \odot \tanh(c_t)
+\]
+\end{enumerate}
+
+Where $\sigma$ is the sigmoid activation function, $tanh$ is the hypberbolic
+tangent activation function, and $\odot$ is the element-wise multiplication operation.
+
+To replicate the LSTM implemented by \cite{saha-2025},
+we use a single-layer LSTM with 128 hidden units and batch-first inputs;
+the final hidden state is passed through dropout ($p = 0.2$),
+a dense layer with 64 units and ReLU activation,
+and a final linear classifier over the six activity classes;
+the model is trained using the Adam optimizer with cross-entropy loss
+and a learning rate of $10^{-3}$;
+and the checkpoint with the best validation accuracy is selected.
 
 \subsection{Training and Evaluation Protocol}
 All models are trained on clean training data and evaluated on both clean and
@@ -146,10 +204,11 @@ For each corruption type, we vary the severity parameter across predefined range
 
 This allows us to analyze:
 \begin{itemize}
-    \item Cross-model robustness (KNN vs Logistic vs SVM)
+    \item Cross-model robustness (KNN vs Logistic vs SVM vs LSTM)
     \item Modality-specific sensitivity (ACCL vs GYRO)
     \item Performance degradation trends across corruption severity
 
-This design ensures that corruption is isolated to specific modalities, allowing controlled analysis of modality-specific robustness.
+This design ensures that corruption is isolated to specific modalities,
+allowing controlled analysis of modality-specific robustness.
 
 \end{itemize}
