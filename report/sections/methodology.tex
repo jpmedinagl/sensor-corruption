@@ -25,7 +25,6 @@ clean data.
 The dataset consists of multivariate time-series sensor data with shape $(N, T, C)$, where $N$ is the number
 of samples, $T$ is the number of timesteps per window, and $C$ is the number of sensor
 channels.
-
 Since classical machine learning models require fixed-length feature vectors, we transform
 each sample into a one-dimensional representation by flattening across the temporal and channel
 dimensions:
@@ -78,7 +77,6 @@ Corruption can be applied at different levels of granularity by specifying which
 affected by the corruption. The dataset contains 6 channels across 2 sensors. Body accelerometer
 (x, y, z) and gyroscope (x, y, z). This allows corruption to be applied to an entire sensor
 modality, a single axis within a modality, or any combination, enabling targeted investigation.
-
 Note that although possible, we decided against investigating applying multiple corruption types
 to the data at a time. The reason for this being that we wanted to targeted investigation of
 corruption types, mixing corruption types would make harder to attribute a corruption type.
@@ -126,14 +124,14 @@ The maximum number of iterations is set to 5000 to ensure stable training.
 \subsubsection{Long Short-Term Memory (LSTM)}
 We implement the LSTM framework described by Saha et al. \cite{saha-2025} in their
 investigation of the effects of missing sensor data on activity classification
-using the UCI HAR dataset, as shown in Figure~\ref{fig:lstmArchitecture}.
+using the UCI HAR dataset. %, as shown in Figure~\ref{fig:lstmArchitecture}.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/lstmArchitecture.png}
-    \caption{LSTM Network Architecture. Reproduced from \cite{saha-2025}.}
-    \label{fig:lstmArchitecture}
-\end{figure}
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=0.5\linewidth]{figures/lstmArchitecture.png}
+%     \caption{LSTM Network Architecture. Reproduced from \cite{saha-2025}.}
+%     \label{fig:lstmArchitecture}
+% \end{figure}
 
 Unlike the flattened inputs used with the classical models,
 each sample is represented as $X_n=[x_1, x_2, ..., x_T]$,
@@ -182,34 +180,34 @@ and the Adam optimizer with a learning rate of $10^{-3}$.
 The model is trained for 80 epochs with a batch size of 64 using a 20\% validation split
 and the checkpoint with the best validation accuracy is selected.
 
-\subsection{Training and Evaluation Protocol}
-All models are trained on clean training data and evaluated on both clean and
-corrupted test sets. Reusing the clean-trained model across corruption levels isolates the
-effect of test-time sensor degradation.
+% \subsection{Training and Evaluation Protocol}
+% All models are trained on clean training data and evaluated on both clean and
+% corrupted test sets. Reusing the clean-trained model across corruption levels isolates the
+% effect of test-time sensor degradation.
+%
+% We report:
+% \begin{itemize}
+%     \item Accuracy
+%     \item Macro-$F_1$ score
+%     \item Confusion Matrix (for selected experiments)
+% \end{itemize}
 
-We report:
-\begin{itemize}
-    \item Accuracy
-    \item Macro-$F_1$ score
-    \item Confusion Matrix (for selected experiments)
-\end{itemize}
-
-\subsection{Experimental Setup}
-
-For each corruption type, we vary the severity parameter across predefined ranges and evaluate model performance on:
-
-\begin{itemize}
-    \item Accelerometer channels (ACCL)
-    \item Gyroscope channels (GYRO)
-\end{itemize}
-
-This allows us to analyze:
-\begin{itemize}
-    \item Cross-model robustness (KNN vs Logistic vs SVM vs LSTM)
-    \item Modality-specific sensitivity (ACCL vs GYRO)
-    \item Performance degradation trends across corruption severity
-
-This design ensures that corruption is isolated to specific modalities,
-allowing controlled analysis of modality-specific robustness.
-
-\end{itemize}
+% \subsection{Experimental Setup}
+%
+% For each corruption type, we vary the severity parameter across predefined ranges and evaluate model performance on:
+%
+% \begin{itemize}
+%     \item Accelerometer channels (ACCL)
+%     \item Gyroscope channels (GYRO)
+% \end{itemize}
+%
+% This allows us to analyze:
+% \begin{itemize}
+%     \item Cross-model robustness (KNN vs Logistic vs SVM vs LSTM)
+%     \item Modality-specific sensitivity (ACCL vs GYRO)
+%     \item Performance degradation trends across corruption severity
+%
+% This design ensures that corruption is isolated to specific modalities,
+% allowing controlled analysis of modality-specific robustness.
+%
+% \end{itemize}

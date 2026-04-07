@@ -1,7 +1,16 @@
 \begin{abstract}
 
-This is an abstract.
-
-Code is available in our public repository \cite{sensor-corruption-repo}.
+Real-world sensor systems are subject to a broad range of hardware faults that degrade the quality
+of collected data. However, Human Activity Recognition (HAR) research has largely focused on
+clean data assumptions, and the research that considers non-clean data, focuses on missing data
+exclusively and provides imputation techniques to solve this problem. In this work we introduce
+a structured sensor corruption framework defined along three dimensions: corruption type, severity,
+and granularity. We apply six physically motivated fault types: stochastic noise, dropout, bias,
+gain, and drift, to the UCI HAR dataset and evaluate four models: KNN, Logistic Regression, SVM,
+and LSTM. Our results show that bias and drift corruptions cause the most severe performance
+degradation, while dropout produces less significant peformance drops. The findings indicate the
+importance of considering additional corruption types beyond dropout. We thus provide the
+first baseline for how additional corruption types affect the HAR classification performance.
+Our code is available in our public repository \cite{sensor-corruption-repo}.
 
 \end{abstract}

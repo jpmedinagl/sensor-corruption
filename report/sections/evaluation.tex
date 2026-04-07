@@ -1,28 +1,22 @@
 \section{Evaluation \& Results}
 
-\subsection{Evaluation Metrics}
-
-\subsection{Results}
-
 \paragraph{Baseline Performance.}
 As mentioned in our Methodology section, our corruption framework requires the raw data to perform
 the various corruption transformations on it. However, the processed data which does not include
 the time component produces much higher accuracy and macro-$F_1$ scores due to the fact that many more
-features are generated. We thus want to establish the baseline performance of the raw data against
-the processed data to contextualize our results of corruption on the raw data. Figure 
-\ref{fig:baseline} shows how the processed data achieves much higher performance than the raw data
-on the classical models. However the LSTM model performs at close to 91.0\% accuracy using the raw
-data. We were able to match Saha et al. \cite{saha-2025} with the LSTM model where they achieved
-93.89\% accuracy. Since this architecture is designed to exploit sequential data, evaluating the
-LSTM on the processed data is not appropriate.
+features are generated. We performed baseline experiments on clean train and test data for our various
+models. With the classical models, we achieved accuracy ranging from 50-60\% which is expected for
+these models. However the LSTM model performs at close to 91.0\% accuracy using the raw
+data, which matches Saha et al. \cite{saha-2025} with their LSTM model where they achieved
+93.89\% accuracy (with imputation).
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
-    \caption{Baseline macro-$F_1$ score for the raw vs processed data against the various models 
-    studied.}
-    \label{fig:baseline}
-\end{figure}
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
+%     \caption{Baseline macro-$F_1$ score for the raw vs processed data against the various models 
+%     studied.}
+%     \label{fig:baseline}
+% \end{figure}
 
 \paragraph{Effect of Dropout.}
 Figure \ref{fig:dropout} outlines the effects of dropout corruption. The macro-$F_1$ score decreases
@@ -139,6 +133,3 @@ perturbation as the corrupted signal remains similar to what was seen during tra
 % conditions. These findings highlight that different corruption types affect models in
 % fundamentally different ways, and robustness depends both on the corruption type and the model
 % architecture.
-
-\paragraph{Modality Study.}
-
