@@ -1,0 +1,177 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2025
+
+% The authors should use one of these tracks.
+% Before accepting by the NeurIPS conference, select one of the options below.
+% 0. "default" for submission
+% \usepackage[main, final]{neurips_2025}
+% the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
+% 1. "main" option is used for the Main Track
+%  \usepackage[main]{neurips_2025}
+% 2. "position" option is used for the Position Paper Track
+%  \usepackage[position]{neurips_2025}
+% 3. "dandb" option is used for the Datasets & Benchmarks Track
+ % \usepackage[dandb]{neurips_2025}
+% 4. "creativeai" option is used for the Creative AI Track
+%  \usepackage[creativeai]{neurips_2025}
+% 5. "sglblindworkshop" option is used for the Workshop with single-blind reviewing
+ % \usepackage[sglblindworkshop]{neurips_2025}
+% 6. "dblblindworkshop" option is used for the Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop]{neurips_2025}
+
+% After being accepted, the authors should add "final" behind the track to compile a camera-ready version.
+% 1. Main Track
+ % \usepackage[main, final]{neurips_2025}
+% 2. Position Paper Track
+%  \usepackage[position, final]{neurips_2025}
+% 3. Datasets & Benchmarks Track
+ % \usepackage[dandb, final]{neurips_2025}
+% 4. Creative AI Track
+%  \usepackage[creativeai, final]{neurips_2025}
+% 5. Workshop with single-blind reviewing
+%  \usepackage[sglblindworkshop, final]{neurips_2025}
+% 6. Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop, final]{neurips_2025}
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote.
+% For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
+% \workshoptitle{WORKSHOP TITLE}
+
+% "preprint" option is used for arXiv or other preprint submissions
+\usepackage[preprint]{neurips_2025}
+
+% Remove the footer
+\makeatletter
+\renewcommand{\@noticestring}{}
+\makeatother
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2025}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\bibliographystyle{unsrtnat}
+
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
+\title{Proposal: Modality-Specific Robustness of Activity Recognition Systems Under Structured Sensor Corruption}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
+JP Medina \\
+University of Toronto \\
+\texttt{jpmedinag@cs.toronto.edu} \\
+\And
+Jadyn Wall \\
+University of Toronto \\
+\texttt{jadyn@cs.toronto.edu} \\
+\And
+Yujie Zhu \\
+University of Toronto \\
+\texttt{iceyujie.zhu@mail.utoronto.ca} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+\section{Problem Definition}
+Human Activity Recognition (HAR) using wearable sensors has broad applications across domains
+such as elder care, fitness tracking, and smart environments.
+The \textit{Human Activity Recognition Using
+Smartphones} (UCI HAR) dataset provided by \cite{reyes-ortiz-2013} contains clean 
+accelerometer and gyroscope data collected from smartphones during 6 human activities.
+In real-world wearable systems, sensors may degrade, drift, or partially fail. Understanding
+how models respond to sensor corruption is critical for building reliable activity recognition
+systems.
+
+\section{Research Questions}
+In our project, we aim to answer the following research questions:
+\begin{enumerate}
+    \item How does corruption of specific sensor modalities (accelerometer vs gyroscope) affect overall classification performance?
+    \item Are certain activities disproportionately affected by corruption of specific sensors?
+    \item Do different model classes respond differently to modality-specific corruption?
+\end{enumerate}
+
+
+\section{Models}
+We will evaulate a set of classical and deep learning models: 
+\begin{itemize}
+    \item \textbf{K-Nearest Neighbours (KNN)} (with varying values of \textit{k})
+    \item \textbf{Logistic Regression} (with and without regularization)
+    \item \textbf{Support Vector Machines (SVM)}: Baseline model used in the original dataset paper
+    \item \textbf{Long Short-Term Memory (LSTM)}
+\end{itemize}
+
+\section{Structured Corruption Framework}
+We will design a structured corruption framework organized into three dimensions:
+\begin{enumerate}
+    \item \textbf{Corruption Type}: Stochastic noise (random degradation), sensor dropout, systematic bias (sensor drift / aging), resolution loss (reducing precision).
+    \item \textbf{Granularity}: Corruption can be applied in various different axis (x vs y vs z), on modalities (different sensors), random subset of features, etc.
+    \item \textbf{Severity}: Defines discrete levels for controlled comparison, how much corruption.
+\end{enumerate}
+
+\section{Result Metrics}
+We will evaluate performace using:
+\begin{itemize}
+    \item \textbf{Accuracy}: In order to compare our models with prior work and give us a baseline of the models that we created. We can also compare our models' accuracy before and after sensor corruption.
+    \item \textbf{Macro-F1}: Measures models performance on all activities giving each equal importance. Can help us answer research question 2, if there are certain activities disproportionately affected by corruption.
+    \item \textbf{AUROC}: Measures how well classes remain separable under the corruption, can give us a confidence degradation score. As well as help us compare model robustness (certain models may maintain higher AUROC scores under corruption).
+    \item \textbf{Confusion Matrix}: per class confusion matrices under corruption which is another metric which helps us view model performance.
+\end{itemize}
+
+\section{Experimental Plan}
+\begin{itemize}
+    \item To mitigate device-activity confounding effects (subjects wear different devices), we ensure subject-wise train/test separation (already done in the dataset) and analyze whether corruption effects are consistent across subjects.
+    \item For our corruption, we will train on clean data, and evaluate model on increasing corruption levels.
+\end{itemize}
+
+\section{Prior Work}
+In paper that introduces the UCI HAR dataset, multiclass SVMs achieve 96\% accuracy.
+
+A deep learning neural networks approach by \cite{ronao-2016} achieves 94\% accuracy.
+
+One of the only papers that discusses missing sensor data, by \cite{saha-2025}, uses a lightweight LSTM model.
+
+Multimodal fusion model which discusses a data cleaning module (denoises noisy data) by \cite{xaviar-2023}.
+
+\section{Goals}
+We intend to explore our problem as outlined above by carefully constructing a sensor corruption framework, creating various models, and calculating our results metrics to answer our research questions.
+
+We aim to conduct a systematic empirical study of modality-specific robustness in human activity recognition systems.
+Our expected contributions include:
+\begin{itemize}
+    \item Modify the dataset to construct a structured corruption framework that simulates realistic sensor degradation scenarios, including stochastic noise, sensor dropout, systematic bias, and resolution loss.
+    \item A quantitative comparison of how corruption in different sensor modalities (accelerometer vs gyroscope) affects classification performance. (We may provide some Charts/Graphs to visualize it and do some analysis work)
+    \item We may provide a comparative evaluation of robustness across different model classes, including classical machine learning models (KNN, logistic regression, SVM) and deep learning models (LSTM).
+\end{itemize}
+
+To achieve this, we will first train selected models (KNN, Logistic Regression, SVM, and LSTM) on clean training data to establish baseline performance. We will then apply structured corruption to accelerometer and gyroscope features separately, varying corruption type and severity levels.
+\begin{itemize}
+    \item We will evaluate each trained model under these controlled corruption scenarios using metrics such as Accuracy, Macro-F1, AUROC, and confusion matrices. This will allow us to quantify how performance degrades under different corruption conditions.
+    \item We will analyze which activities are most sensitive to sensor corruption and compare robustness across model classes by examining performance degradation patterns.
+\end{itemize}
+
+
+\bibliography{references}
+
+\end{document}

@@ -25,7 +25,7 @@ Typical values: (0.25, 0.5, 1.0, 1.25)
 Typical value: (0.1, 0.25, 0.5, 0.75)
 - **Bias**: Corresponds to a fraction of the channel's standard deviation added as a constant offset.  
 Typical Values: (0.25, 0.5, 1.0, 1.5)
-- **Gain**: Corresponds to a constant multiplier applied to the signal.   
+- **Gain**: Corresponds to a constant multiplier applied to the signal.  
 Typical values: (0.5, 0.75, 1.25, 2.0)
 - **Drift**: Corresponds to a multiplier of the channel's standard deviation by the end of the signal window.  
 Typical values: (1, 2, 3, 4)

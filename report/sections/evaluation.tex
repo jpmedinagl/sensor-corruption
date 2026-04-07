@@ -1,0 +1,135 @@
+\section{Evaluation \& Results}
+
+\paragraph{Baseline Performance.}
+As mentioned in our Methodology section, our corruption framework requires the raw data to perform
+the various corruption transformations on it. However, the processed data which does not include
+the time component produces much higher accuracy and macro-$F_1$ scores due to the fact that many more
+features are generated. We performed baseline experiments on clean train and test data for our various
+models. With the classical models, we achieved accuracy ranging from 50-60\% which is expected for
+these models. However the LSTM model performs at close to 91.0\% accuracy using the raw
+data, which matches Saha et al. \cite{saha-2025} with their LSTM model where they achieved
+93.89\% accuracy (with imputation).
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
+%     \caption{Baseline macro-$F_1$ score for the raw vs processed data against the various models 
+%     studied.}
+%     \label{fig:baseline}
+% \end{figure}
+
+\paragraph{Effect of Dropout.}
+Figure \ref{fig:dropout} outlines the effects of dropout corruption. The macro-$F_1$ score decreases
+significantly only for the KNN model, while for the other models (logistic, SVM, LSTM) the macro-$F_1$
+score decreases steadily. This supports our earlier point that dropout corruption is currently the
+only corruption type that is being studied in literature and does not significantly decrease
+accuracy or macro-$F_1$ score except up to the point that dropout corruption removes test data.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{plots/trend_Dropout_Macro-F1.png}
+    \caption{Macro-$F_1$ score for the dropout corruption on the test dataset on the various models.}
+    \label{fig:dropout}
+\end{figure}
+
+\paragraph{Effect of Drift.}
+Figure \ref{fig:drift} outlines the effects of drift corruption. This corruption type significantly
+affects the models. As severity increases, we can observe that the macro-$F_1$ score significantly
+decreases for all models. LSTM is the model most negatively affected by the corruption. The reason
+why drift corruption has a more negative impact than the dropout corruption is because drift
+corruption corrupts every timestep in the signal window with a monotonically increasing offset.
+This fundamentally alters the properties of the signal, it no longer preserves the integrity of
+underlying signal making it increasingly unrecognizable to models that rely on learned temporal
+features.
+% TODO: confusion matrix
+% ADD CONFUSION MATRIX TO DRIVE THE POINT HOME -> MODELS GET SUPER CONFUSED,
+% WHICH ACTIVITES ARE MORE AFFECTED??
+This result outlines the significance of training models that are resistant to additional
+corruption types beyond dropout as drift corruption can heavily affect activity recognition
+systems.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{plots/trend_Drift_Macro-F1.png}
+    \caption{Macro-$F_1$ score for the drift corruption on the test dataset on the various models.}
+    \label{fig:drift}
+\end{figure}
+
+\paragraph{Effect of Gain.}
+Gain corruption is separated into amplification (gain $> 1$) and attenuation (gain $< 1$). Note
+that gain $= 1$ is the baseline performance without any corruption.
+
+Figure \ref{fig:attenuation} outlines the effects when gain $< 1$. As the severity decreases (the
+corruption becomes more significant), we can observe that the macro-$F_1$ score decreases for some
+models. We can observe that the logistic, SVM, and LSTM models are largely unaffected by
+attenuation. The only model significantly affected by attenuation is KNN. The reason is that
+attenuation scales the test signal values down uniformly, moving them away from the region of the
+feature space occupied by the clean training data. KNN relies on distances to training examples, so
+this shift causes test points to be matched against incorrect neighbors. Logistic regression, SVM,
+and LSTM are less affected because they learn decision boundaries that are more invariant to
+uniform scaling of the input.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_lt_1)_Macro-F1.png}
+    \caption{Macro-$F_1$ score for the gain corruption (attenuation) on the test dataset on the
+    various models.}
+    \label{fig:attenuation}
+\end{figure}
+
+Figure \ref{fig:amplification} outlines the effects when gain $> 1$.
+Amplification scales the test signal values up uniformly, moving test points further away from the
+origin in the feature space. Logistic regression and SVM are largely unaffected because their
+decision boundaries are defined by the direction of feature differences rather than their absolute
+magnitude, making them inherently more invariant to uniform scaling. Surprisingly, KNN macro-$F_1$
+scores increase as severity increases, which is the inverse of the attenuation effect. A plausible
+explanation is that the clean training and test data are not perfectly aligned in scale.
+Amplification may move test samples closer to their true class cluster in the training set. This
+is an unexpected finding that should be investigated in future work.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_gt_1)_Macro-F1.png}
+    \caption{Macro-$F_1$ score for the gain corruption (amplification) on the test dataset on the
+    various models.}
+    \label{fig:amplification}
+\end{figure}
+
+\paragraph{Effect of Bias.}
+Figure \ref{fig:bias} outlines the effects of bias corruption. This corruption type also
+significantly affects the models. As severity increases, we can observe that the macro-$F_1$ score
+decreases significantly for all models. Similarly with drift corruption, LSTM is the model most
+affected by the bias corruption. The reason why bias corruption has a significant impact is because
+bias corruption shifts the entire signal by a constant offset, moving it outside the distribution
+the models were trained on. A constant offset displaces every timestep, which causes the model's
+learned feature representations to no longer correspond to the corrupted input. Again, this
+highlights the importance of training models robust to additional corruption types beyond dropout.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{plots/trend_Bias_Macro-F1.png}
+    \caption{Macro-$F_1$ score for the bias corruption on the test dataset on the various models.}
+    \label{fig:bias}
+\end{figure}
+
+\paragraph{Effect of Stochastic Noise.}
+Stochastic noise had minimal impact on performance, this is because stochastic noise only corrupts
+a subset of timesteps within the signal window and only displaces these timesteps by a small random
+amount scaled to the signals standard deviation. Since the noise is applied independently for each
+timestep corrupted, it tends to average out over the window, leaving the overall signal structure
+largely intact. Models trained on clean data are typically already robust to this type of
+perturbation as the corrupted signal remains similar to what was seen during training.
+
+% We won't report resolution, it had zero effect, we can mention it but not here
+% \paragraph{Effect of Resolution.}
+% Resolution changes have negligible impact across all models, indicating that activity recognition
+% relies on coarse motion patterns rather than fine-grained signal precision.
+
+% this sounds more like conclusion than anything else
+% \paragraph{Overall Trends.}
+% Across all corruption types, we observe that not all perturbations degrade performance
+% monotonically. While dropout and drift significantly harm performance, stochastic noise and
+% resolution have minimal impact. Interestingly, gain can even improve performance under certain
+% conditions. These findings highlight that different corruption types affect models in
+% fundamentally different ways, and robustness depends both on the corruption type and the model
+% architecture.

@@ -1,0 +1,23 @@
+\section{Future Work}
+For future investigation, we would focus on firstly evaluating the effect of training on corrupted
+data which would hopefully improve model robustness. Second, we would evaluate combinations
+of corruption types to better reflect real world scenarios. Finally we would hope to investigate
+integrating our corruption framework along with the processed data, by first applying the
+corruption on the raw data and performing the transformations necessary to produce the processed
+data.
+
+\section{Conclusion}
+In this report, we introduced a structured sensor corruption framework for evaluating the
+robustness of Human Activity Recognition models under realistic sensor degradation. Our framework
+characterizes corruption along three dimensions: type, granularity, and severity, and applies
+six fault types across accelerometer and gyroscope modalities of the UCI HAR dataset. We evaluated
+four models trained on clean data and tested under controlled corruption, providing the first
+baseline for additional corruption types than dropout.
+Our experiments reveal that corruption types have different impacts on the models. Dropout, being
+the most studied corruption type in prior literature, did not produce the most significant
+degradation. However, bias and drift caused significant performance drops on most models. The
+performance drop is due to these fault types altering the signal distribution that learned models
+rely on.
+These results highlight the need to focus on additional corruption types beyond dropout, which
+additionally cannot be solved by imputation techniques. We hope our framework and baseline results
+motivate future work on building HAR systems robust to more sensor fault types.

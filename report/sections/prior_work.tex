@@ -1,0 +1,66 @@
+\section{Related Work}
+
+% Plan:
+% - introductory work on HAR -> initial paper that introduces our dataset
+% - outline work done on HAR -> deep neural networks / etc (not related to our project
+% - introduce the concept of missing data 
+% - outline work done on missing data -> hossain 2018/20, xaviar, reyes-ortiz, saha
+% - outline general sensor faults
+% - mention our purpose again
+
+HAR using wearable inertial sensors is a research area with well-established benchmark datasets
+and models. Lara and Labrador \cite{lara-2013} provided a survey on the research area, covering
+sensors used, feature extraction methods for time series based datasets, learning models typically
+used, and evaluation metrics. The UCI HAR dataset \cite{reyes-ortiz-2013} introduced by Reyes-Ortiz
+et al. \cite{reyes-ortiz-2013} provided a multiclass SVM baseline achieving 96\% accuracy. Deep
+learning methods used by Ronao et al. \cite{ronao-2016} provided similar results with 94.79\%
+classification accuracy on the raw sensor data, and 95.75\% classification accuracy if the featured
+frequency information is included. Saha et al. \cite{saha-2025} provided another baseline using
+a lightweight LSTM model with KNN imputation, achieving, 93.89\% accuracy. These results confirm
+that HAR on clean data is a well-studied problem.
+
+% missing imputation discussion below
+Missing sensor readings is the most common studied problem when regarding non-clean data
+assumptions in sensor produced data. Adhikari et al. \cite{adhikari-2022} provided a
+survey on imputation as a tecnique for replacing missing data in internet of things systems.
+In the context of HAR, Hossain et al. \cite{hossain-2018} provided a study on sensor-based HAR with
+missing data by evaluating the effect of randomly missing accelerometer data, finding that accuracy
+rates decreased significantly even with small missing data rates. Hossain et al. \cite{hossain-2020}
+later introduced the idea of explicitly inducing missing data in the training sets to make models
+more resistant to missing data and showed that recognition accuracy significantly increased without
+requiring imputation. Saha et al. \cite{saha-2025} addressed the same problem on the UCI HAR
+dataset, using KNN imputation to recover missing readings. Xaviar et al. \cite{xaviar-2023}
+proposed a cleaning module: a multimodal fusion model with a denoising autoencoder that learns to
+correct missing input signals before classification.
+
+These works represent important contributions in sensor degraded data, however they suffer from the
+same limitation of only considering sensor dropout, and thus study imputation as a solution to this
+problem. However many sensor fault types cannot be simply solved by imputation as they do not
+represent missing data.
+
+Sensor corruption literature has been studied extensively. Ni et al. \cite{ni-2009} provided
+a taxonomy of sensor network data faults drawn from real deployments: stuck-at-faults, offset
+faults, calibration faults, noise, drift, etc. Li et al. \cite{li-2020} extended this in a review
+of sensor fault diagnosis techniques, distinguishing between incipient failures that are difficult
+to detect early (bias, drift, gain) and abrupt failures such as sudden noise spikes or hardware
+disconnection. The discussion of sensor degraded data on HAR datasets have largely been focused on
+abrupt failures, for which data imputation can fill the gaps, however incipient failures ...
+
+We base our sensor corruption framework on the physical sensor faults introduced by Li et al.
+\cite{li-2020}. We focus on sensor bias, drift, gain (amplification, attenuation), noise, and
+dropout which correspond to a documented physical failure mode. Thus we ensure our framework
+and corruption scenarios we study are not arbitrary but reflect degradation patterns that real HAR
+deployments will encounter.
+
+% citations cut:
+%     - samara-2008: sensor faults but in aircraft systems... didn't seem too applicable but
+%         mentioned in li-2020
+%     - qi-2021: impacts of dirty data in general... could be used to argue that our investigation
+%         is important but I couldn't find anything concrete
+%
+% there should only be 10 citations then
+
+% all citations just to test -> there should be 12 total citations at the end
+% \cite{samara-2008} \cite{ni-2009} \cite{reyes-ortiz-2013} \cite{lara-2013} \cite{ronao-2016}
+% \cite{hossain-2018} \cite{hossain-2020} \cite{li-2020} \cite{qi-2021} \cite{adhikari-2022}
+% \cite{xaviar-2023} \cite{saha-2025}
