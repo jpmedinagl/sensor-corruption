@@ -44,7 +44,8 @@ faults, calibration faults, noise, drift, etc. Li et al. \cite{li-2020} extended
 of sensor fault diagnosis techniques, distinguishing between incipient failures that are difficult
 to detect early (bias, drift, gain) and abrupt failures such as sudden noise spikes or hardware
 disconnection. The discussion of sensor degraded data on HAR datasets have largely been focused on
-abrupt failures, for which data imputation can fill the gaps, however incipient failures ...
+abrupt failures, for which data imputation can fill the gaps, however incipient failures introduce
+distortions that persist across the signal window and cannot be recovered through imputation.
 
 We base our sensor corruption framework on the physical sensor faults introduced by Li et al.
 \cite{li-2020}. We focus on sensor bias, drift, gain (amplification, attenuation), noise, and
