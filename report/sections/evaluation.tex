@@ -12,10 +12,10 @@ features are generated. We thus want to establish the baseline performance of th
 the processed data to contextualize our results of corruption on the raw data. Figure 
 \ref{fig:baseline} shows how the processed data achieves much higher performance than the raw data
 on the classical models. However the LSTM model performs at close to 91.0\% accuracy using the raw
-data. We were able to match Saha. et al \cite{saha-2025} with the LSTM model where they achieved
+data. We were able to match Saha et al. \cite{saha-2025} with the LSTM model where they achieved
 93.89\% accuracy.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
     \caption{Baseline Macro-F1 score for the raw vs processed data against the various models 
@@ -30,7 +30,7 @@ score decreases steadily. This supports our earlier point that dropout corruptio
 only corruption type that is being studied in literature and does not significantly decrease
 accuracy or macro-f1 score except up to the point that dropout corruption removes test data.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Dropout_Macro-F1.png}
     \caption{Macro-F1 score for the dropout corruption on the test dataset on the various models.}
@@ -53,7 +53,7 @@ This result outlines the significance of training models that are resistant to a
 corruption types beyond dropout as drift corruption can heavily affect activity recognition
 systems.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Drift_Macro-F1.png}
     \caption{Macro-F1 score for the drift corruption on the test dataset on the various models.}
@@ -74,7 +74,7 @@ this shift causes test points to be matched against incorrect neighbors. Logisti
 and LSTM are less affected because they learn decision boundaries that are more invariant to
 uniform scaling of the input.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_lt_1)_Macro-F1.png}
     \caption{Macro-F1 score for the gain corruption (attenuation) on the test dataset on the
@@ -92,7 +92,7 @@ explanation is that the clean training and test data are not perfectly aligned i
 Amplification may move test samples closer to their true class cluster in the training set. This
 is an unexpected finding that should be investigated in future work.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{plots/trend_Gain_(attenuation_gt_1)_Macro-F1.png}
     \caption{Macro-F1 score for the gain corruption (amplification) on the test dataset on the
