@@ -177,8 +177,9 @@ we use a single-layer LSTM with 128 hidden units and batch-first inputs;
 the final hidden state is passed through dropout ($p = 0.2$),
 a dense layer with 64 units and ReLU activation,
 and a final linear classifier over the six activity classes;
-the model is trained using the Adam optimizer with cross-entropy loss
-and a learning rate of $10^{-3}$;
+the model uses cross-entropy loss
+and the Adam optimizer with a learning rate of $10^{-3}$.
+The model is trained for 80 epochs with a batch size of 64 using a 20\% validation split
 and the checkpoint with the best validation accuracy is selected.
 
 \subsection{Training and Evaluation Protocol}
