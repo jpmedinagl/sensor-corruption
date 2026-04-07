@@ -124,7 +124,7 @@ We use a linear SVM (LinearSVC) combined with feature standardization:
 The maximum number of iterations is set to 5000 to ensure stable training.
 
 \subsubsection{Long Short-Term Memory (LSTM)}
-We implement the LSTM framework described by \cite{saha-2025} in their
+We implement the LSTM framework described by Saha et al. \cite{saha-2025} in their
 investigation of the effects of missing sensor data on activity classification
 using the UCI HAR dataset, as shown in Figure~\ref{fig:lstmArchitecture}.
 
@@ -172,7 +172,7 @@ h_t = o_t \odot \tanh(c_t)
 Where $\sigma$ is the sigmoid activation function, $tanh$ is the hypberbolic
 tangent activation function, and $\odot$ is the element-wise multiplication operation.
 
-To replicate the LSTM implemented by \cite{saha-2025},
+To replicate the LSTM implemented in \cite{saha-2025},
 we use a single-layer LSTM with 128 hidden units and batch-first inputs;
 the final hidden state is passed through dropout ($p = 0.2$),
 a dense layer with 64 units and ReLU activation,
