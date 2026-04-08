@@ -6,17 +6,9 @@ the various corruption transformations on it. However, the processed data which 
 the time component produces much higher accuracy and macro-$F_1$ scores due to the fact that many more
 features are generated. We performed baseline experiments on clean train and test data for our various
 models. With the classical models, we achieved accuracy ranging from 50-60\% which is expected for
-these models. However the LSTM model performs at close to 91.0\% accuracy using the raw
-data, which matches Saha et al. \cite{saha-2025} with their LSTM model where they achieved
+these models. However, the LSTM model performs at close to 91.0\% accuracy using the raw
+data, which is comparable to Saha et al. \cite{saha-2025} with their LSTM model where they achieved
 93.89\% accuracy (with imputation).
-
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.7\textwidth]{plots/baseline_Macro-F1_by_model.png}
-%     \caption{Baseline macro-$F_1$ score for the raw vs processed data against the various models 
-%     studied.}
-%     \label{fig:baseline}
-% \end{figure}
 
 \paragraph{Effect of Dropout.}
 Figure \ref{fig:dropout} outlines the effects of dropout corruption. The macro-$F_1$ score decreases
@@ -113,7 +105,7 @@ highlights the importance of training models robust to additional corruption typ
 \end{figure}
 
 \paragraph{Effect of Stochastic Noise.}
-Stochastic noise had minimal impact on performance, this is because stochastic noise only corrupts
+Stochastic noise had minimal impact on performance. This is because stochastic noise only corrupts
 a subset of timesteps within the signal window and only displaces these timesteps by a small random
 amount scaled to the signals standard deviation. Since the noise is applied independently for each
 timestep corrupted, it tends to average out over the window, leaving the overall signal structure

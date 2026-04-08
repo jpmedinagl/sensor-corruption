@@ -16,13 +16,13 @@ et al. \cite{reyes-ortiz-2013} provided a multiclass SVM baseline achieving 96\%
 learning methods used by Ronao et al. \cite{ronao-2016} provided similar results with 94.79\%
 classification accuracy on the raw sensor data, and 95.75\% classification accuracy if the featured
 frequency information is included. Saha et al. \cite{saha-2025} provided another baseline using
-a lightweight LSTM model with KNN imputation, achieving, 93.89\% accuracy. These results confirm
+a lightweight LSTM model with KNN imputation, achieving 93.89\% accuracy. These results confirm
 that HAR on clean data is a well-studied problem.
 
 % missing imputation discussion below
-Missing sensor readings is the most common studied problem when regarding non-clean data
+Missing sensor readings are the most commonly studied problem when regarding non-clean data
 assumptions in sensor produced data. Adhikari et al. \cite{adhikari-2022} provided a
-survey on imputation as a tecnique for replacing missing data in internet of things systems.
+survey on imputation as a technique for replacing missing data in internet of things systems.
 In the context of HAR, Hossain et al. \cite{hossain-2018} provided a study on sensor-based HAR with
 missing data by evaluating the effect of randomly missing accelerometer data, finding that accuracy
 rates decreased significantly even with small missing data rates. Hossain et al. \cite{hossain-2020}
@@ -35,7 +35,7 @@ correct missing input signals before classification.
 
 These works represent important contributions in sensor degraded data, however they suffer from the
 same limitation of only considering sensor dropout, and thus study imputation as a solution to this
-problem. However many sensor fault types cannot be simply solved by imputation as they do not
+problem. In reality, many sensor fault types cannot simply be solved by imputation as they do not
 represent missing data.
 
 Sensor corruption literature has been studied extensively. Ni et al. \cite{ni-2009} provided
@@ -43,8 +43,8 @@ a taxonomy of sensor network data faults drawn from real deployments: stuck-at-f
 faults, calibration faults, noise, drift, etc. Li et al. \cite{li-2020} extended this in a review
 of sensor fault diagnosis techniques, distinguishing between incipient failures that are difficult
 to detect early (bias, drift, gain) and abrupt failures such as sudden noise spikes or hardware
-disconnection. The discussion of sensor degraded data on HAR datasets have largely been focused on
-abrupt failures, for which data imputation can fill the gaps, however incipient failures introduce
+disconnection. The discussion of sensor degraded data on HAR datasets has largely focused on
+abrupt failures, for which data imputation can fill the gaps. However, incipient failures introduce
 distortions that persist across the signal window and cannot be recovered through imputation.
 
 We base our sensor corruption framework on the physical sensor faults introduced by Li et al.

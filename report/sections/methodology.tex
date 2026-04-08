@@ -17,7 +17,7 @@ removing the time component of the signal, we decided against using the feature 
 manipulating the featured signals would not be possible. Our study focuses on the raw signal data,
 therefore we applied our corruption framework directly on the raw signal data. Note that it would be
 possible to reconstruct the frequency-based feature dataset after a corruption is applied by
-performing the feature engineering outlined in their work. However that is beyond the scope
+performing the feature engineering outlined in their work. However, that is beyond the scope
 of this study, we simply decided to work on the raw signal data itself and compare against
 clean data.
 
@@ -71,8 +71,8 @@ We investigated various different corruption types, each designed to mimic a dis
     \]
     This simulates gradual sensor drift over time.
 \end{enumerate}
-We also additionally considered resolution corruption, which simulates sensor miscalibration and aging. However
-this corruption type produced identical results as the clean data, and thus we don't consider this corruption
+We also considered resolution corruption, which simulates sensor miscalibration and aging. However,
+this corruption type produced identical results as the clean data, and thus we do not consider this corruption
 type further. A plausible reason for this is that resolution corruption does not modify signal features and
 thus is classified in the same way.
 
@@ -82,8 +82,8 @@ affected by the corruption. The dataset contains 6 channels across 2 sensors. Bo
 (x, y, z) and gyroscope (x, y, z). This allows corruption to be applied to an entire sensor
 modality, a single axis within a modality, or any combination, enabling targeted investigation.
 Note that although possible, we decided against investigating applying multiple corruption types
-to the data at a time. The reason for this being that we wanted to targeted investigation of
-corruption types, mixing corruption types would make harder to attribute a corruption type.
+to the data at a time. The reason for this being that we wanted a targeted investigation of corruption
+types; mixing corruption types would make it harder to attribute effects to any single corruption type.
 
 \subsubsection{Severity}
 Each corruption type has an associated severity parameter that controls the degree of corruption
@@ -171,7 +171,7 @@ h_t = o_t \odot \tanh(c_t)
 \]
 \end{enumerate}
 
-Where $\sigma$ is the sigmoid activation function, $tanh$ is the hypberbolic
+Where $\sigma$ is the sigmoid activation function, $tanh$ is the hyperbolic
 tangent activation function, and $\odot$ is the element-wise multiplication operation.
 
 To replicate the LSTM implemented in \cite{saha-2025},
